@@ -11,12 +11,11 @@ import (
 // Setup configura as rotas do servidor
 func Setup() http.Handler {
 	r := chi.NewRouter()
-
-	// Middleware de contexto
-	//r.Use(handlers.ContextMiddleware)
-
 	// Rota principal
-	r.With(handlers.ContextMiddleware(10 * time.Second)).Get("/", handlers.TestHandler)
+	r.With(handlers.ContextMiddleware(10*time.Second)).Get("/", handlers.TestHandler)
+
+	//Rota de cotação
+	r.With(handlers.ContextMiddleware(200*time.Millisecond)).Get("/cotacao", handlers.CotacaoHandler)
 
 	return r
 }

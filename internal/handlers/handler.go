@@ -21,3 +21,14 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
+func CotacaoHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	select {
+	case <-time.After(10 * time.Millisecond):
+		json.NewEncoder(w).Encode(map[string]string{"message": "Hello, Go with Context!"})
+	case <-ctx.Done():
+		log.Println("Contexto cancelado:", ctx.Err())
+		http.Error(w, "Request canceled or timeout", http.StatusRequestTimeout)
+	}
+}
