@@ -16,8 +16,7 @@ func Setup() http.Handler {
 	//r.Use(handlers.ContextMiddleware)
 
 	// Rota principal
-	//r.Get("/", handlers.TestHandler)
-	r.With(ContextMiddleware(2 * time.Second)).Get("/", handlers.TestHandler)
+	r.With(handlers.ContextMiddleware(10 * time.Second)).Get("/", handlers.TestHandler)
 
 	return r
 }
