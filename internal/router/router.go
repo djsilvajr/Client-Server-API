@@ -15,7 +15,7 @@ func Setup() http.Handler {
 	r.With(handlers.ContextMiddleware(10*time.Second)).Get("/", handlers.TestHandler)
 
 	//Rota de cotação
-	r.With(handlers.ContextMiddleware(200*time.Millisecond)).Get("/cotacao", handlers.CotacaoHandler)
+	r.With(handlers.ContextMiddleware(200*time.Millisecond)).Post("/cotacao", handlers.CotacaoHandler)
 
 	return r
 }
