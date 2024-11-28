@@ -13,6 +13,7 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 
 	select {
 	case <-time.After(5 * time.Second):
+
 		json.NewEncoder(w).Encode(map[string]string{"message": "Hello, Go with Context!"})
 	case <-ctx.Done():
 		log.Println("Contexto cancelado:", ctx.Err())
