@@ -1,10 +1,10 @@
 package router
 
 import (
+	"my-app/internal/handlers"
 	"net/http"
 	"time"
 
-	"my-app/internal/handlers"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -14,8 +14,8 @@ func Setup() http.Handler {
 	// Rota principal
 	r.With(handlers.ContextMiddleware(10*time.Second)).Get("/", handlers.TestHandler)
 
-	//Rota de cotação
-	r.With(handlers.ContextMiddleware(200*time.Millisecond)).Post("/cotacao", handlers.CotacaoHandler)
+	//Rotas de pratica com string
+	r.With(handlers.ContextMiddleware(10*time.Second)).Get("/strings/contar", handlers.StringCount)
 
 	return r
 }
