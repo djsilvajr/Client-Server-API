@@ -5,7 +5,17 @@ import (
 	"my-app/internal/requests"
 )
 
-func CountString(r requests.StringCountRequest) string {
+type CountStringResponse struct {
+	Valor string `json:"valor"`
+}
+
+func CountString(r requests.StringCountRequest) ([]CountStringResponse, error) {
+
+	resp := []CountStringResponse{
+		{Valor: r.Valor},
+	}
+
 	log.Println(r)
-	return ""
+
+	return resp, nil
 }

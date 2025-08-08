@@ -21,9 +21,14 @@ func StringCount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	select {
-	case <-time.After(5 * time.Second):
+	case <-time.After(1 * time.Second):
 
-		retorno := service.CountString(payload)
+		retorno, err := service.CountString(payload)
+		if err != nil {
+			response.WriteJSON[map[string]any](w, http.StatusUnprocessableEntity, false, "Erro ao executar ação de contar string", nil)
+			return
+		}
+
 		log.Println(retorno)
 		return
 		//json.NewEncoder(w).Encode(map[string]string{"message": "Hello, Go with Context!"})
