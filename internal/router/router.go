@@ -15,7 +15,7 @@ func Setup() http.Handler {
 	r.With(handlers.ContextMiddleware(10*time.Second)).Get("/", handlers.TestHandler)
 
 	//Rotas de pratica com string
-	r.With(handlers.ContextMiddleware(10*time.Second)).Get("/strings/contar", handlers.StringCount)
+	r.With(handlers.ContextMiddleware(10*time.Second)).Post("/strings/contar", handlers.StringCount)
 
 	return r
 }

@@ -29,9 +29,8 @@ func StringCount(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Println(retorno)
+		response.WriteJSON(w, http.StatusOK, true, "OK", retorno)
 		return
-		//json.NewEncoder(w).Encode(map[string]string{"message": "Hello, Go with Context!"})
 	case <-ctx.Done():
 		log.Println("Contexto cancelado:", ctx.Err())
 		http.Error(w, "Request canceled or timeout", http.StatusRequestTimeout)

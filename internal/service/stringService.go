@@ -1,7 +1,7 @@
 package service
 
 import (
-	"log"
+	//"log"
 	"my-app/internal/requests"
 )
 
@@ -10,12 +10,9 @@ type CountStringResponse struct {
 }
 
 func CountString(r requests.StringCountRequest) ([]CountStringResponse, error) {
-
 	resp := []CountStringResponse{
 		{Valor: r.Valor},
 	}
-
-	log.Println(r)
-
+	//log.Println(r)
 	return resp, nil
 }

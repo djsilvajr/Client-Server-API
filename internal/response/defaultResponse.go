@@ -8,11 +8,12 @@ import (
 type Response[T any] struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
-	Data    *T     `json:"data,omitempty"`
+	Data    T      `json:"data"`
 }
 
-func WriteJSON[T any](w http.ResponseWriter, code int, status bool, message string, data *T) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+// Exemplo de WriteJSON genérico:
+func WriteJSON[T any](w http.ResponseWriter, code int, status bool, msg string, data T) {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	_ = json.NewEncoder(w).Encode(Response[T]{Status: status, Message: message, Data: data})
+	json.NewEncoder(w).Encode(Response[T]{Status: status, Message: msg, Data: data})
 }
