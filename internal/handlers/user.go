@@ -43,3 +43,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Request canceled or timeout", http.StatusRequestTimeout)
 	}
 }
+
+func GetUserProfile(w http.ResponseWriter, r *http.Request) {
+	println("GetUserProfile")
+}

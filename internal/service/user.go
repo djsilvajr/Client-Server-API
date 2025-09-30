@@ -2,7 +2,7 @@ package service
 
 import (
 	//"log"
-	"fmt"
+
 	"my-app/internal/models"
 	"my-app/internal/repository"
 	"my-app/internal/requests"
@@ -13,8 +13,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var tokenStore = make(map[string]string)
-var jwtSecret = []byte("minha-chave-super-secreta-123@2025!bananinha123")
+var TokenStore = make(map[string]string)
+var JwtSecret = []byte("minha-chave-super-secreta-123@2025!bananinha123")
 
 func LoginUser(r requests.LoginUser) (map[string]any, error) {
 
@@ -34,9 +34,9 @@ func LoginUser(r requests.LoginUser) (map[string]any, error) {
 		return nil, &response.ServiceError{StatusCode: http.StatusInternalServerError, Message: "Erro ao gerar token JWT"}
 	}
 
-	tokenStore[user.Email] = token
+	TokenStore[user.Email] = token
 
-	fmt.Printf("%v\n", user)
+	//fmt.Printf("%v\n", user)
 
 	retorno := map[string]any{
 		"token": token,
@@ -59,7 +59,7 @@ func GenerateJWT(email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Assine e gere a string do token
-	tokenString, err := token.SignedString(jwtSecret)
+	tokenString, err := token.SignedString(JwtSecret)
 	if err != nil {
 		return "", err
 	}
@@ -67,6 +67,17 @@ func GenerateJWT(email string) (string, error) {
 }
 
 func ValidateServerToken(email, token string) bool {
-	savedToken, exists := tokenStore[email]
+	savedToken, exists := TokenStore[email]
 	return exists && savedToken == token
+}
+
+func GetUserProfile(email string) (map[string]any, error) {
+
+	retorno := map[string]any{
+		"user": map[string]string{
+			"email": "teste",
+			"name":  "teste",
+		},
+	}
+	return retorno, nil
 }

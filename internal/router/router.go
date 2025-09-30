@@ -18,6 +18,10 @@ func Setup() http.Handler {
 
 	//Users
 	r.With(handlers.ContextMiddleware(10*time.Second)).Post("/user/login", handlers.LoginUser)
+	r.With(
+		handlers.ContextMiddleware(10*time.Second),
+		handlers.TokenMiddleware,
+	).Get("/user/profile", handlers.GetUserProfile)
 
 	return r
 }
