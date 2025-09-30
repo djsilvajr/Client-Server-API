@@ -12,7 +12,7 @@ VALUES (
     UUID(),
     'Douglas Junior',
     'douglasJunior@example.com',
-    '$2a$10$CwTycUXWue0Thq9StjUM0uJ8s3bvdN7Z5pnI3lF7x1tCzX1w8y3yG', --123456
+    '$2a$10$twK2.FqHkYFkF0mEGOZWCOdJ3tr.T2C8McMlxsZHhJF1ul2LCduri', --123456
     NOW(),
     NOW()
 );

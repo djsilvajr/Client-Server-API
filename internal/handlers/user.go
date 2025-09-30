@@ -27,7 +27,12 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 		retorno, err := service.LoginUser(payload)
 		if err != nil {
-			response.WriteJSON[map[string]any](w, http.StatusUnprocessableEntity, false, "Erro ao realizar login", nil)
+			if serr, ok := err.(*response.ServiceError); ok {
+				response.WriteJSON(w, serr.StatusCode, false, serr.Message, response.Empty{})
+			} else {
+				// Erro genérico
+				response.WriteJSON(w, http.StatusInternalServerError, false, "Erro interno", response.Empty{})
+			}
 			return
 		}
 

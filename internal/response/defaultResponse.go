@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+type Empty struct{}
+
 type Response[T any] struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
