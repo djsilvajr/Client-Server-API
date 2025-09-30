@@ -11,6 +11,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+var Conn *sql.DB
+
 func Connect(cfg config.Config) (*sql.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
@@ -29,5 +31,6 @@ func Connect(cfg config.Config) (*sql.DB, error) {
 		return nil, err
 	}
 
+	Conn = db
 	return db, nil
 }
