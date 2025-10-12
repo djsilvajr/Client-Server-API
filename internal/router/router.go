@@ -19,9 +19,9 @@ func Setup() http.Handler {
 	//Users
 	r.With(handlers.ContextMiddleware(10*time.Second)).Post("/user/login", handlers.LoginUser)
 	r.With(
-		handlers.ContextMiddleware(10*time.Second),
+		handlers.ContextMiddleware(2*time.Second),
 		handlers.TokenMiddleware,
-	).Get("/user/profile", handlers.GetUserProfile)
+	).Get("/user/validation", handlers.GetValidationMessage)
 
 	return r
 }

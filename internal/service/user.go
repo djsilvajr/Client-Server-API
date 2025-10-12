@@ -70,14 +70,3 @@ func ValidateServerToken(email, token string) bool {
 	savedToken, exists := TokenStore[email]
 	return exists && savedToken == token
 }
-
-func GetUserProfile(email string) (map[string]any, error) {
-
-	retorno := map[string]any{
-		"user": map[string]string{
-			"email": "teste",
-			"name":  "teste",
-		},
-	}
-	return retorno, nil
-}

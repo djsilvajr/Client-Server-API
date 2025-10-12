@@ -44,6 +44,20 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetUserProfile(w http.ResponseWriter, r *http.Request) {
-	println("GetUserProfile")
+func GetValidationMessage(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	select {
+	case <-time.After(1 * time.Second):
+
+		var validTokenResponse response.ValidTokenResponse
+		validTokenResponse.Status = "OK"
+		validTokenResponse.Message = "Token valido"
+		json.NewEncoder(w).Encode(validTokenResponse)
+		return
+	case <-ctx.Done():
+		log.Println("Contexto cancelado:", ctx.Err())
+		http.Error(w, "Request canceled or timeout", http.StatusRequestTimeout)
+	}
+
 }
