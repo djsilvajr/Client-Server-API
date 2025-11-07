@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"my-app/internal/response"
 	"my-app/internal/service"
 	"net/http"
 	"strings"
@@ -35,12 +36,12 @@ func TokenMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
+			response.WriteJSON(w, http.StatusUnauthorized, false, "Missing Authorization header", response.Empty{})
 			return
 		}
 		parts := strings.SplitN(authHeader, " ", 2)
 		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
-			http.Error(w, "Invalid Authorization header format", http.StatusUnauthorized)
+			response.WriteJSON(w, http.StatusUnauthorized, false, "Invalid Authorization header format", response.Empty{})
 			return
 		}
 		tokenString := parts[1]
@@ -49,24 +50,24 @@ func TokenMiddleware(next http.Handler) http.Handler {
 			return service.JwtSecret, nil
 		})
 		if err != nil || !token.Valid {
-			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			response.WriteJSON(w, http.StatusUnauthorized, false, "Invalid token", response.Empty{})
 			return
 		}
 
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			http.Error(w, "Invalid token claims", http.StatusUnauthorized)
+			response.WriteJSON(w, http.StatusUnauthorized, false, "Invalid token claims", response.Empty{})
 			return
 		}
 		email, ok := claims["email"].(string)
 		if !ok || email == "" {
-			http.Error(w, "Email not found in token", http.StatusUnauthorized)
+			response.WriteJSON(w, http.StatusUnauthorized, false, "Email not found in token", response.Empty{})
 			return
 		}
 
 		// Use exported validation function
 		if !service.ValidateServerToken(email, tokenString) {
-			http.Error(w, "Token does not match stored token", http.StatusUnauthorized)
+			response.WriteJSON(w, http.StatusUnauthorized, false, "Token does not match stored token", response.Empty{})
 			return
 		}
 

@@ -12,7 +12,7 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	select {
-	case <-time.After(5 * time.Second):
+	case <-time.After(1 * time.Second):
 
 		json.NewEncoder(w).Encode(map[string]string{"message": "Hello, Go with Context!"})
 	case <-ctx.Done():

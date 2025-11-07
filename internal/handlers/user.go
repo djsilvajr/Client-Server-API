@@ -2,62 +2,72 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
+	"net/http"
+
 	"my-app/internal/requests"
 	"my-app/internal/response"
 	"my-app/internal/service"
-	"net/http"
-	"time"
 )
 
-// HelloHandler responde com uma mensagem JSON
 func LoginUser(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	//var payload requests.StringCountRequest
-	var payload requests.LoginUser
+	// feche o body ao final (boa prática)
+	defer r.Body.Close()
 
-	err := json.NewDecoder(r.Body).Decode(&payload)
-	if err != nil {
-		response.WriteJSON[map[string]any](w, http.StatusUnprocessableEntity, false, "Json Inválido", nil)
+	// Decodificador que falha se houver campos desconhecidos (ajuda a evitar payloads inválidos)
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+
+	var payload requests.LoginUser
+	if err := dec.Decode(&payload); err != nil {
+		// Mensagem clara ao cliente e log simples para debug
+		log.Printf("failed to decode login payload: %v\n", err)
+		response.WriteJSON(w, http.StatusUnprocessableEntity, false, "JSON inválido", response.Empty{})
 		return
 	}
 
+	// Verifica se o contexto já foi cancelado antes de processar
 	select {
-	case <-time.After(1 * time.Second):
+	case <-r.Context().Done():
+		log.Println("request canceled before login processing:", r.Context().Err())
+		http.Error(w, "Request canceled or timeout", http.StatusRequestTimeout)
+		return
+	default:
+		// continua
+	}
 
-		retorno, err := service.LoginUser(payload)
-		if err != nil {
-			if serr, ok := err.(*response.ServiceError); ok {
-				response.WriteJSON(w, serr.StatusCode, false, serr.Message, response.Empty{})
-			} else {
-				// Erro genérico
-				response.WriteJSON(w, http.StatusInternalServerError, false, "Erro interno", response.Empty{})
-			}
+	// Chama o serviço de login
+	retorno, err := service.LoginUser(payload)
+	if err != nil {
+		// Use errors.As para suportar erros embrulhados (wrapping)
+		var serr *response.ServiceError
+		if errors.As(err, &serr) {
+			// erro tratado pela camada de serviço (ex.: credenciais inválidas)
+			response.WriteJSON(w, serr.StatusCode, false, serr.Message, response.Empty{})
 			return
 		}
 
-		response.WriteJSON(w, http.StatusOK, true, "OK", retorno)
+		// erro inesperado
+		log.Printf("unexpected error in LoginUser service: %v\n", err)
+		response.WriteJSON(w, http.StatusInternalServerError, false, "Erro interno", response.Empty{})
 		return
-	case <-ctx.Done():
-		log.Println("Contexto cancelado:", ctx.Err())
-		http.Error(w, "Request canceled or timeout", http.StatusRequestTimeout)
 	}
+
+	// Retorno de sucesso (200)
+	response.WriteJSON(w, http.StatusOK, true, "OK", retorno)
 }
 
 func GetValidationMessage(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
+	// Respeita cancelamento do contexto
 	select {
-	case <-time.After(1 * time.Second):
-
-		var validTokenResponse response.ValidTokenResponse
-		validTokenResponse.Status = "OK"
-		validTokenResponse.Message = "Token valido"
-		json.NewEncoder(w).Encode(validTokenResponse)
-		return
-	case <-ctx.Done():
-		log.Println("Contexto cancelado:", ctx.Err())
+	case <-r.Context().Done():
+		log.Println("request canceled in GetValidationMessage:", r.Context().Err())
 		http.Error(w, "Request canceled or timeout", http.StatusRequestTimeout)
+		return
+	default:
+		// Monta resposta de validação
+		// Usa WriteJSON se disponível para resposta consistente
+		response.WriteJSON(w, http.StatusOK, true, "Token válido", map[string]any{})
 	}
-
 }
